@@ -1,0 +1,23 @@
+/* ========== 智途校园 — 登录页样式 ========== */
+.login-wrapper {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #E6F5F3 0%, #F5F6F8 50%, #FEF9E7 100%);
+  position: relative;
+}
+.login-box {
+  background: var(--bg-white); border-radius: 16px; padding: 48px 40px;
+  width: 400px; max-width: 90vw; box-shadow: var(--shadow-lg); text-align: center;
+  border: 1px solid var(--border);
+}
+.login-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
+.login-logo .logo-circle { width: 44px; height: 44px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.login-logo .logo-circle svg { width: 24px; height: 24px; fill: #fff; }
+.login-title { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+.login-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; margin-bottom: 32px; }
+.login-form { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+.login-actions { display: flex; gap: 10px; margin-top: 8px; }
+.login-actions .btn { flex: 1; padding: 10px; }
+.login-switch { margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+.login-switch a { color: var(--primary); font-weight: 500; cursor: pointer; }
+.login-switch a:hover { text-decoration: underline; }
+.login-error { background: var(--danger-light); color: var(--danger); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; text-align: left; display: none; }

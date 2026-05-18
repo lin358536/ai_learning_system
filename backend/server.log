@@ -1,0 +1,7 @@
+[xiaoxia] Coze Agent starting...
+[xiaoxia] Ready: http://localhost:8000/api
+INFO:     127.0.0.1:51214 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51225 - "POST /api/auth/login HTTP/1.1" 200 OK
+[email] Word简历生成成功，大小: 38060 bytes
+[email] 邮件发送成功 -> 2412406990@qq.com | 主题: [小虾管家] 你的AI简历已生成 — 数据工程师求职简历
+INFO:     127.0.0.1:51228 - "POST /api/resumes/save HTTP/1.1" 200 OK

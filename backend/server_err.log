@@ -1,0 +1,7 @@
+G:\MyProject\ai_learning_system\backend\venv\Lib\site-packages\cozepy\auth\__init__.py:7: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+It will be compatible before version 2.0.0.
+  from authlib.jose import jwt  # type: ignore
+INFO:     Started server process [24148]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)

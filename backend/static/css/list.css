@@ -1,0 +1,52 @@
+/* ========== 智途校园 — 规划/简历列表样式 ========== */
+
+/* 规划卡片 */
+.plan-card {
+  background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; margin-bottom: 12px; transition: all 0.2s;
+}
+.plan-card:hover { box-shadow: var(--shadow-md); }
+.plan-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.plan-card-title { font-size: 15px; font-weight: 600; cursor: pointer; }
+.plan-card-title:hover { color: var(--primary); }
+.plan-card-meta { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+.plan-card-meta span { display: flex; align-items: center; gap: 4px; }
+.plan-card-actions { display: flex; gap: 6px; }
+.plan-progress-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.plan-progress-text { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+/* 简历卡片 */
+.resume-card {
+  background: var(--bg-white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px;
+  transition: all 0.2s;
+}
+.resume-card:hover { box-shadow: var(--shadow-md); }
+.resume-icon { width: 42px; height: 42px; border-radius: 10px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.resume-info { flex: 1; min-width: 0; }
+.resume-title { font-size: 14px; font-weight: 600; }
+.resume-date { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.resume-status { flex-shrink: 0; margin-right: 8px; }
+.resume-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* 详情弹窗内样式 */
+.detail-section { margin-bottom: 20px; }
+.detail-section-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.task-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #F3F4F6; }
+.task-item:last-child { border-bottom: none; }
+.task-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.2s ease; font-size: 12px; color: transparent; user-select: none; }
+.task-checkbox:hover { border-color: var(--primary); }
+.task-checkbox.completed { background: var(--primary); border-color: var(--primary); color: #fff; }
+.task-content { font-size: 13px; flex: 1; transition: all 0.2s ease; }
+.task-content.completed { text-decoration: line-through; color: var(--text-muted); }
+.task-date { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+
+/* 简历内容渲染 */
+.resume-content { line-height: 1.8; }
+.resume-content h1 { font-size: 20px; margin-bottom: 16px; }
+.resume-content h2 { font-size: 16px; margin-top: 20px; margin-bottom: 8px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.resume-content p { margin: 4px 0; }
+.resume-content ul, .resume-content ol { padding-left: 20px; margin: 4px 0; }
+.resume-content li { list-style: disc; margin: 2px 0; }
+.resume-content ol li { list-style: decimal; }
+.resume-content strong { font-weight: 600; }

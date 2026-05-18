@@ -1,0 +1,33 @@
+# 环境变量（包含敏感信息）
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 虚拟环境
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 测试
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 前端（如使用）
+node_modules/

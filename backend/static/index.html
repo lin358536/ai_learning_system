@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智途校园 — 大学生 AI 成长服务平台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='18'>🎓</text></svg>">
+  <link rel="stylesheet" href="/static/css/common.css">
+  <link rel="stylesheet" href="/static/css/login.css">
+  <style>
+    /* 首屏加载动画 */
+    #app-loading { position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:9999; }
+    .loading-spinner { width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <!-- 加载占位 -->
+  <div id="app-loading"><div class="loading-spinner"></div></div>
+  <!-- SPA 根容器 -->
+  <div id="app"></div>
+
+  <!-- JS 模块加载顺序重要 -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/chat.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/plans.js"></script>
+  <script src="/static/js/resumes.js"></script>
+  <script src="/static/js/profile.js"></script>
+  <script>
+    // 移除加载动画
+    document.getElementById('app-loading').remove();
+    // 初始路由
+    if (!window.location.hash || window.location.hash === '#') {
+      window.location.hash = '#/login';
+    }
+  </script>
+</body>
+</html>
