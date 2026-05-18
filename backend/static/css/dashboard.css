@@ -20,7 +20,7 @@
 /* 能力维度 */
 .skill-list { display: flex; flex-direction: column; gap: 14px; }
 .skill-item { display: flex; align-items: center; gap: 12px; }
-.skill-name { font-size: 13px; color: var(--text-secondary); width: 72px; flex-shrink: 0; }
+.skill-name { font-size: 13px; color: var(--text-secondary); min-width: 80px; flex-shrink: 0; }
 .skill-bar { flex: 1; }
 .skill-bar .progress-bar { height: 8px; }
 .skill-level { font-size: 12px; font-weight: 600; color: var(--primary); width: 50px; text-align: right; }

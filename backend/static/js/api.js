@@ -124,3 +124,8 @@ const PointsAPI = {
   async get() { return request('/points'); },
   async getRank(limit = 10) { return request(`/points/rank?limit=${limit}`); }
 };
+
+// ========== 能力维度 ==========
+const AbilitiesAPI = {
+  async get() { return request('/abilities'); }
+};
