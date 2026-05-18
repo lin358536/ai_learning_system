@@ -90,18 +90,29 @@ async def toggle_task(
                             detail={"success": False, "error": {"code": "NOT_FOUND", "message": "任务不存在"}})
 
     was_completed = task_obj.status == "completed"
+    points_earned = 0
 
     if req.completed and not was_completed:
         # 标记完成 + 首次完成加积分
         task_obj.status = "completed"
         task_obj.completed_at = datetime.now()
-        point = Point(
-            user_id=user_id,
-            amount=5,
-            reason=f"完成学习任务：{task_obj.content[:50]}",
-            source="task_complete",
+        # 防止并发重复加分
+        existing = await db.execute(
+            select(Point).where(
+                Point.user_id == user_id,
+                Point.source == "task_complete",
+                Point.reason == f"完成学习任务：{task_obj.content[:50]}",
+            )
         )
-        db.add(point)
+        if not existing.scalar_one_or_none():
+            point = Point(
+                user_id=user_id,
+                amount=5,
+                reason=f"完成学习任务：{task_obj.content[:50]}",
+                source="task_complete",
+            )
+            db.add(point)
+            points_earned = 5
     elif not req.completed and was_completed:
         # 取消完成（不扣回积分）
         task_obj.status = "pending"
@@ -129,6 +140,6 @@ async def toggle_task(
                 "completed": completed,
                 "progress": progress,
             },
-            "points_earned": 5 if req.completed and not was_completed else 0,
+            "points_earned": points_earned,
         },
     }

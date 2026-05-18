@@ -1,12 +1,74 @@
-/* ========== 智途校园 — 对话页（SSE流式 + 自动保存规划/简历） ========== */
+/* ========== 智途校园 — 对话页（SSE流式 + 侧边栏 + 保存规划/简历） ========== */
 function initChatPage() {
   const content = document.getElementById('page-content');
+  let sidebarVisible = true;
+
+  const conversations = [
+    { date: '今天', items: [
+      { icon: '💬', title: '关于Python数据分析的讨论', time: '14:32', active: true },
+      { icon: '📋', title: '帮我制定学习规划', time: '11:15' },
+    ]},
+    { date: '昨天', items: [
+      { icon: '📄', title: '生成一份数据工程师简历', time: '20:41' },
+      { icon: '💬', title: 'SQL优化技巧有哪些', time: '16:08' },
+      { icon: '💬', title: '专升本要怎么准备', time: '09:22' },
+    ]},
+  ];
+
+  function renderSidebar(filter) {
+    const val = filter || '';
+    let html = `
+      <div class="sidebar-header">
+        <input class="sidebar-search" id="sidebar-search" value="${val}" placeholder="搜索对话..." autocomplete="off">
+        <button class="sidebar-close-btn" id="sidebar-close">✕</button>
+      </div>
+      <div class="chat-list" id="chat-list">`;
+
+    let hasItems = false;
+    conversations.forEach(group => {
+      const filtered = filter
+        ? group.items.filter(i => i.title.includes(filter))
+        : group.items;
+      if (!filtered.length) return;
+      hasItems = true;
+
+      html += `<div class="chat-date-label">${group.date}</div>`;
+      filtered.forEach(item => {
+        html += `
+          <div class="chat-item${item.active ? ' active' : ''}">
+            <div class="chat-item-icon">${item.icon}</div>
+            <div class="chat-item-content">
+              <div class="chat-item-title">${item.title}</div>
+              <div class="chat-item-time">${item.time}</div>
+            </div>
+          </div>`;
+      });
+    });
+
+    if (!hasItems) {
+      html += '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">无匹配对话</div>';
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  function toggleSidebar(show) {
+    sidebarVisible = show !== undefined ? show : !sidebarVisible;
+    const layout = document.getElementById('chat-layout');
+    layout.classList.toggle('sidebar-collapsed', !sidebarVisible);
+  }
+
   content.innerHTML = `
     <link rel="stylesheet" href="/static/css/chat.css">
     <div class="chat-layout" id="chat-layout">
+      <div class="chat-sidebar" id="chat-sidebar">
+        ${renderSidebar('')}
+      </div>
       <div class="chat-main">
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-area">
+          <button class="sidebar-open-btn" id="sidebar-open" title="展开会话列表">☰</button>
           <input class="chat-input" id="chat-input" placeholder="输入消息，和小途对话..." maxlength="1000" autocomplete="off">
           <button class="chat-send" id="btn-send">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -14,6 +76,29 @@ function initChatPage() {
         </div>
       </div>
     </div>`;
+
+  // 侧边栏事件绑定
+  document.getElementById('sidebar-close').addEventListener('click', () => toggleSidebar(false));
+
+  document.getElementById('sidebar-open').addEventListener('click', () => toggleSidebar(true));
+
+  function bindSearch() {
+    const searchInput = document.getElementById('sidebar-search');
+    if (!searchInput) return;
+    searchInput.addEventListener('input', function onSearch() {
+      const sidebar = document.getElementById('chat-sidebar');
+      const val = searchInput.value.trim();
+      sidebar.innerHTML = renderSidebar(val);
+      document.getElementById('sidebar-close').addEventListener('click', () => toggleSidebar(false));
+      bindSearch();
+    });
+    // 重新聚焦
+    searchInput.focus();
+    const len = searchInput.value.length;
+    searchInput.setSelectionRange(len, len);
+    // 定位光标到末尾
+  }
+  bindSearch();
 
   const messagesEl = document.getElementById('chat-messages');
   const inputEl = document.getElementById('chat-input');
