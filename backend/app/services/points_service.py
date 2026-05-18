@@ -46,6 +46,8 @@ class PointsService:
         # 总用户数
         users_result = await db.execute(select(func.count(User.id)))
         total_users = int(users_result.scalar() or 0)
+        if total_users > 0 and rank > total_users:
+            rank = total_users
 
         # 近期记录（最近10条）
         recent_result = await db.execute(
@@ -76,23 +78,21 @@ class PointsService:
         result = await db.execute(
             select(
                 Point.user_id,
+                User.name,
                 func.sum(Point.amount).label("total"),
             )
-            .group_by(Point.user_id)
+            .outerjoin(User, Point.user_id == User.id)
+            .group_by(Point.user_id, User.name)
             .order_by(func.sum(Point.amount).desc())
             .limit(limit)
         )
         rows = result.all()
 
-        leaderboard = []
-        for index, (uid, total) in enumerate(rows):
-            # 查用户名
-            user_result = await db.execute(select(User).where(User.id == uid))
-            user = user_result.scalar_one_or_none()
-            leaderboard.append({
+        return [
+            {
                 "rank": index + 1,
-                "name": user.name if user else "匿名",
+                "name": name or "匿名",
                 "points": int(total),
-            })
-
-        return leaderboard
+            }
+            for index, (_, name, total) in enumerate(rows)
+        ]

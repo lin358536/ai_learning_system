@@ -31,3 +31,5 @@ htmlcov/
 
 # 前端（如使用）
 node_modules/
+
+opencode.json

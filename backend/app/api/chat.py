@@ -15,6 +15,7 @@ from app.models.user import User
 from app.services.profile_service import ProfileService
 from app.services.plan_service import PlanService
 from app.services.resume_service import ResumeService
+from app.services.points_service import PointsService
 
 router = APIRouter(tags=["对话"])
 
@@ -141,6 +142,8 @@ async def save_plan_from_chat(
     try:
         plan_service = PlanService()
         plan = await plan_service.save_plan(db, user_id, title, plan_content)
+        points_service = PointsService()
+        await points_service.add_points(db, user_id, 20, "创建学习规划", "plan")
         await db.commit()
     except Exception as e:
         await db.rollback()
@@ -176,6 +179,8 @@ async def save_resume_from_chat(
     try:
         resume_service = ResumeService()
         resume = await resume_service.save_resume(db, user_id, title, resume_content)
+        points_service = PointsService()
+        await points_service.add_points(db, user_id, 15, "生成简历", "resume")
         await db.commit()
     except Exception as e:
         await db.rollback()
