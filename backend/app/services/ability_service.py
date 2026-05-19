@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.points import Point
 from app.models.plan import LearningPlan, DailyTask
-from app.models.chat import Conversation
+from app.models.chat import ChatMessage
 
 
 class AbilityService:
@@ -28,8 +28,8 @@ class AbilityService:
     async def _study_time(self, db: AsyncSession, user_id: int) -> dict:
         """学习时长 — 基于对话次数和活跃度"""
         result = await db.execute(
-            select(func.count(Conversation.id))
-            .where(Conversation.user_id == user_id)
+            select(func.count(ChatMessage.id))
+            .where(ChatMessage.user_id == user_id)
         )
         conv_count = int(result.scalar() or 0)
         # 归一化：0-50次对话映射到 0-1

@@ -7,3 +7,4 @@ timeout /t 3 /nobreak >nul
 echo [zhitu] Backend running at http://localhost:8000/api
 echo [zhitu] Swagger docs: http://localhost:8000/docs
 echo [zhitu] Press Ctrl+C to stop
+pause
