@@ -13,6 +13,7 @@ from app.api.points import router as points_router
 from app.api.plans import router as plans_router
 from app.api.resumes import router as resumes_router
 from app.api.chat import router as chat_router
+from app.api.abilities import router as abilities_router
 
 
 @asynccontextmanager
@@ -57,6 +58,7 @@ app.include_router(points_router, prefix="/api")
 app.include_router(plans_router, prefix="/api")
 app.include_router(resumes_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
+app.include_router(abilities_router, prefix="/api")
 
 
 @app.get("/api/health")

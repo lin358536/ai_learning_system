@@ -86,10 +86,21 @@ const ChatAPI = {
   async confirm(confirmId, action) {
     return request('/chat/confirm', { method: 'POST', body: JSON.stringify({ confirm_id: confirmId, action }) });
   },
-  async getHistory(conversationId = null, page = 1, limit = 50) {
-    let url = `/chat/history?page=${page}&limit=${limit}`;
-    if (conversationId) url += `&conversation_id=${conversationId}`;
-    return request(url);
+  // 获取对话列表（按 conversation_id 分组）
+  async getConversations(page = 1, limit = 50) {
+    return request(`/chat/conversations?page=${page}&limit=${limit}`);
+  },
+  // 获取指定对话的所有消息
+  async getConversationMessages(conversationId) {
+    return request(`/chat/conversations/${conversationId}`);
+  },
+  // 删除指定对话
+  async deleteConversation(conversationId) {
+    return request(`/chat/conversations/${conversationId}`, { method: 'DELETE' });
+  },
+  // 清空全部历史
+  async clearHistory() {
+    return request('/chat/history', { method: 'DELETE' });
   }
 };
 
@@ -123,4 +134,9 @@ const ResumeAPI = {
 const PointsAPI = {
   async get() { return request('/points'); },
   async getRank(limit = 10) { return request(`/points/rank?limit=${limit}`); }
+};
+
+// ========== 能力维度 ==========
+const AbilitiesAPI = {
+  async get() { return request('/abilities'); }
 };

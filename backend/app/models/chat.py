@@ -11,6 +11,7 @@ class ChatMessage(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    conversation_id: Mapped[str | None] = mapped_column(String(36), nullable=True, comment="对话分组ID（UUID），同一组消息共享一个ID")
     role: Mapped[str] = mapped_column(String(20), nullable=False)  # user / assistant
     content: Mapped[str] = mapped_column(Text, nullable=False)
     intent: Mapped[str | None] = mapped_column(String(50), nullable=True)

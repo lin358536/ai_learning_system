@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS `chat_messages`;
 CREATE TABLE `chat_messages`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` bigint UNSIGNED NOT NULL,
+  `conversation_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '对话分组ID（UUID），同一组消息共享一个ID',
   `role` enum('user','assistant') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `intent` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
@@ -32,6 +33,8 @@ CREATE TABLE `chat_messages`  (
   `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_chat_messages_user_created`(`user_id` ASC, `created_at` DESC) USING BTREE,
+  INDEX `idx_conversation_id`(`conversation_id` ASC) USING BTREE,
+  INDEX `idx_user_conversation`(`user_id` ASC, `conversation_id` ASC) USING BTREE,
   INDEX `idx_chat_messages_confirm_id`(`confirm_id` ASC) USING BTREE,
   CONSTRAINT `fk_chat_messages_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 149 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;

@@ -1,6 +1,7 @@
 # 智途校园 - 对话路由（SSE流式 | Coze扣子智能体 | 自动保存规划/简历）
 import json
 import re
+import uuid as uuid_lib
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -42,9 +43,13 @@ async def chat(
     """SSE流式对话接口 — 查用户画像拼上下文后调用扣子智能体"""
     user_id = user["user_id"]
 
+    # 生成或复用 conversation_id
+    conv_id = req.conversation_id or str(uuid_lib.uuid4())
+
     # 保存用户消息到本地数据库
     user_msg = ChatMessage(
         user_id=user_id,
+        conversation_id=conv_id,
         role="user",
         content=req.message,
         intent=None,
@@ -89,6 +94,8 @@ async def chat(
                     final_intent = event.get("intent", "chat")
                     if event.get("full_content") and not full_reply:
                         full_reply = event["full_content"]
+                    # 在 done 事件中注入 conversation_id，方便前端捕获
+                    event["conversation_id"] = conv_id
                     yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
                 elif event_type == "error":
@@ -98,6 +105,7 @@ async def chat(
             if full_reply.strip():
                 assistant_msg = ChatMessage(
                     user_id=user_id,
+                    conversation_id=conv_id,
                     role="assistant",
                     content=full_reply.strip(),
                     intent=final_intent,
@@ -194,48 +202,142 @@ async def save_resume_from_chat(
     }
 
 
-# ── 对话历史 ──────────────────────────────────────────────────────
+# ── 对话分组（Conversations） ──────────────────────────────────────
 
-@router.get("/chat/history")
-async def chat_history(
+@router.get("/chat/conversations")
+async def chat_conversations(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-    limit: int = Query(20, ge=1, le=100),
     page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
 ):
-    """获取对话历史（分页）"""
+    """获取对话列表（按 conversation_id 分组）"""
+    user_id = user["user_id"]
+    offset = (page - 1) * limit
+
+    # 统计总数
     count_result = await db.execute(
-        select(func.count(ChatMessage.id)).where(ChatMessage.user_id == user["user_id"])
+        select(func.count(func.distinct(ChatMessage.conversation_id)))
+        .where(
+            ChatMessage.user_id == user_id,
+            ChatMessage.conversation_id.isnot(None),
+        )
     )
     total = count_result.scalar() or 0
 
-    offset = (page - 1) * limit
-    result = await db.execute(
-        select(ChatMessage)
-        .where(ChatMessage.user_id == user["user_id"])
-        .order_by(ChatMessage.created_at.desc())
+    # 查询对话列表：每个 conversation 的首条用户消息（作为标题） + 最后消息时间 + 消息数
+    stmt = (
+        select(
+            ChatMessage.conversation_id,
+            func.any_value(ChatMessage.content).label("title_raw"),
+            func.max(ChatMessage.created_at).label("last_message_at"),
+            func.count(ChatMessage.id).label("message_count"),
+        )
+        .where(
+            ChatMessage.user_id == user_id,
+            ChatMessage.conversation_id.isnot(None),
+            ChatMessage.role == "user",
+        )
+        .group_by(ChatMessage.conversation_id)
+        .order_by(func.max(ChatMessage.created_at).desc())
         .offset(offset)
         .limit(limit)
     )
-    messages = list(reversed(result.scalars().all()))
+
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    # 批量获取每个对话的最新 intent（用 MAX(id) 取每个对话最后一条 assistant 消息）
+    conv_ids = [r.conversation_id for r in rows]
+    intent_map = {}
+    if conv_ids:
+        # 子查询：每个 conversation_id 最新消息的 id
+        max_id_sub = (
+            select(
+                ChatMessage.conversation_id,
+                func.max(ChatMessage.id).label("max_id")
+            )
+            .where(
+                ChatMessage.user_id == user_id,
+                ChatMessage.conversation_id.in_(conv_ids),
+                ChatMessage.role == "assistant",
+            )
+            .group_by(ChatMessage.conversation_id)
+            .subquery()
+        )
+        intent_rows = await db.execute(
+            select(
+                ChatMessage.conversation_id,
+                ChatMessage.intent,
+            )
+            .join(max_id_sub, ChatMessage.id == max_id_sub.c.max_id)
+            .where(ChatMessage.intent.isnot(None))
+        )
+        for r2 in intent_rows.all():
+            intent_map[r2.conversation_id] = r2.intent
+
+    def _get_icon(intent: str | None) -> str:
+        if intent == "generate_plan":
+            return "📋"
+        elif intent == "generate_resume":
+            return "📄"
+        return "💬"
+
+    conversations = []
+    for row in rows:
+        title = (row.title_raw or "")[:30]
+        conversations.append({
+            "conversation_id": row.conversation_id,
+            "title": title,
+            "last_message_at": row.last_message_at.isoformat() if row.last_message_at else None,
+            "message_count": row.message_count,
+            "icon": _get_icon(intent_map.get(row.conversation_id)),
+        })
 
     return {
         "success": True,
         "data": {
+            "conversations": conversations,
+            "total": total,
+            "page": page,
+            "limit": limit,
+        },
+    }
+
+
+@router.get("/chat/conversations/{conversation_id}")
+async def chat_conversation_detail(
+    conversation_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """获取指定对话的所有消息"""
+    result = await db.execute(
+        select(ChatMessage)
+        .where(
+            ChatMessage.user_id == user["user_id"],
+            ChatMessage.conversation_id == conversation_id,
+        )
+        .order_by(ChatMessage.created_at.asc())
+    )
+    messages = result.scalars().all()
+
+    return {
+        "success": True,
+        "data": {
+            "conversation_id": conversation_id,
             "messages": [
                 {
                     "id": m.id,
                     "role": m.role,
                     "content": m.content,
                     "intent": m.intent,
+                    "conversation_id": m.conversation_id,
                     "created_at": m.created_at.isoformat() if m.created_at else None,
                 }
                 for m in messages
                 if not m.content.startswith("[待确认]")
             ],
-            "total": total,
-            "page": page,
-            "limit": limit,
         },
     }
 
@@ -245,12 +347,29 @@ async def clear_chat_history(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """清空当前用户的对话历史"""
+    """清空当前用户的全部对话历史"""
     await db.execute(
         delete(ChatMessage).where(ChatMessage.user_id == user["user_id"])
     )
     await db.commit()
     return {"success": True, "data": {"message": "对话历史已清空"}}
+
+
+@router.delete("/chat/conversations/{conversation_id}")
+async def delete_conversation(
+    conversation_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """删除指定对话"""
+    await db.execute(
+        delete(ChatMessage).where(
+            ChatMessage.user_id == user["user_id"],
+            ChatMessage.conversation_id == conversation_id,
+        )
+    )
+    await db.commit()
+    return {"success": True, "data": {"message": "对话已删除"}}
 
 
 # ── 内容提取辅助函数 ──────────────────────────────────────────────
