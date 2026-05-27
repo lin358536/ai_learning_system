@@ -4,10 +4,10 @@ function initDashboardPage() {
   content.innerHTML = `
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <div class="stat-cards" id="stat-cards">
-      <div class="stat-card"><div class="stat-icon green">📖</div><div><div class="stat-value">-</div><div class="stat-label">总积分</div></div></div>
-      <div class="stat-card"><div class="stat-icon blue">🏆</div><div><div class="stat-value">-</div><div class="stat-label">排名</div></div></div>
-      <div class="stat-card"><div class="stat-icon yellow">👥</div><div><div class="stat-value">-</div><div class="stat-label">总用户</div></div></div>
-      <div class="stat-card"><div class="stat-icon red">📊</div><div><div class="stat-value">-</div><div class="stat-label">对话数</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><div class="stat-value">-</div><div class="stat-label">总积分</div></div></div>
+      <div class="stat-card"><div class="stat-icon blue"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div><div><div class="stat-value">-</div><div class="stat-label">排名</div></div></div>
+      <div class="stat-card"><div class="stat-icon yellow"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><div class="stat-value">-</div><div class="stat-label">总用户</div></div></div>
+      <div class="stat-card"><div class="stat-icon red"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div><div><div class="stat-value">-</div><div class="stat-label">对话数</div></div></div>
     </div>
     <div class="dashboard-grid">
       <div class="card">

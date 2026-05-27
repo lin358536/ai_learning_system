@@ -18,7 +18,7 @@ async function loadPlans() {
   try {
     const result = await PlanAPI.list();
     if (!result.success || !result.data.plans.length) {
-      listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">暂无学习规划，去对话页面让小途帮你制定吧</div></div>';
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><div class="empty-text">暂无学习规划，去对话页面让小途帮你制定吧</div></div>';
       return;
     }
 
@@ -40,9 +40,9 @@ async function loadPlans() {
             <span class="plan-progress-text">${pct}%（${completed}/${total} 任务）</span>
           </div>
           <div class="plan-card-meta">
-            <span>📝 总任务 ${total}</span>
-            <span>✅ 已完成 ${completed}</span>
-            <span>📅 ${formatDateShort(p.created_at)}</span>
+            <span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> 总任务 ${total}</span>
+            <span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 已完成 ${completed}</span>
+            <span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${formatDateShort(p.created_at)}</span>
           </div>
           <div class="plan-card-actions">
             <button class="btn btn-outline btn-sm view-plan" data-id="${p.id}">查看详情</button>
@@ -94,7 +94,7 @@ async function showPlanDetail(id) {
       </div>
       ${tasks.map(t => `
         <div class="task-item" data-task-id="${t.id}" data-status="${t.status}">
-          <div class="task-checkbox ${t.status === 'completed' ? 'completed' : ''}">${t.status === 'completed' ? '✓' : ''}</div>
+          <div class="task-checkbox ${t.status === 'completed' ? 'completed' : ''}">${t.status === 'completed' ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>
           <div class="task-content ${t.status === 'completed' ? 'completed' : ''}">${t.content}</div>
           <div class="task-date">${t.task_date ? formatDateShort(t.task_date) : ''}</div>
         </div>`).join('')}</div>`;
@@ -130,12 +130,12 @@ async function showPlanDetail(id) {
       const content = item.querySelector('.task-content');
       if (wantComplete) {
         checkbox.classList.add('completed');
-        checkbox.textContent = '✓';
+        checkbox.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
         content.classList.add('completed');
         item.dataset.status = 'completed';
       } else {
         checkbox.classList.remove('completed');
-        checkbox.textContent = '';
+        checkbox.innerHTML = '';
         content.classList.remove('completed');
         item.dataset.status = 'pending';
       }
@@ -159,12 +159,12 @@ async function showPlanDetail(id) {
         // 回滚 UI
         if (!wantComplete) {
           checkbox.classList.add('completed');
-          checkbox.textContent = '✓';
+          checkbox.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
           content.classList.add('completed');
           item.dataset.status = 'completed';
         } else {
           checkbox.classList.remove('completed');
-          checkbox.textContent = '';
+          checkbox.innerHTML = '';
           content.classList.remove('completed');
           item.dataset.status = 'pending';
         }

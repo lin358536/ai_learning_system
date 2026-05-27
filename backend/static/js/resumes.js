@@ -18,13 +18,13 @@ async function loadResumes() {
   try {
     const result = await ResumeAPI.list();
     if (!result.success || !result.data.resumes.length) {
-      listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📄</div><div class="empty-text">暂无简历，去对话页面让小途帮你生成吧</div></div>';
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="empty-text">暂无简历，去对话页面让小途帮你生成吧</div></div>';
       return;
     }
 
     listEl.innerHTML = result.data.resumes.map(r => `
       <div class="resume-card">
-        <div class="resume-icon">📄</div>
+        <div class="resume-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <div class="resume-info">
           <div class="resume-title">${r.title || '未命名简历'}</div>
           <div class="resume-date">创建于 ${formatDateShort(r.created_at)}</div>
@@ -119,7 +119,7 @@ function renderResumeJSON(data) {
   const intentItem = esc(basic['求职意向'] || '');
   if (intentItem) html += `<p style="margin:0 0 4px;"><span style="background:var(--primary-10,rgba(99,102,241,.12));color:var(--primary);padding:2px 8px;border-radius:4px;font-size:0.85rem;">求职意向：${intentItem}</span></p>`;
   const contactItem = esc(basic['联系方式'] || '');
-  if (contactItem) html += `<p style="margin:4px 0 0;font-size:0.85rem;color:var(--text-secondary);">📞 ${contactItem}</p>`;
+  if (contactItem) html += `<p style="margin:4px 0 0;font-size:0.85rem;color:var(--text-secondary);"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${contactItem}</p>`;
   html += `</div>`;
 
   /* ── 教育背景 ── */
