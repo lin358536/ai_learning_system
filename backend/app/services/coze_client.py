@@ -9,9 +9,14 @@ from cozepy import (
     Message, ChatEventType,
 )
 
-# ── 配置 ────────────────────────────────────────────────────────
-COZE_PAT = "pat_d9cbf6pcfz1w73edxytlByjfO6dCgUy5TtAb8Gg3N0xVWqDu7RqXaq36i0EqVQM2"
-COZE_BOT_ID = "7628977381587992619"
+# ── 配置（从环境变量读取，不写死） ──────────────────────────────
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+COZE_PAT = os.getenv("COZE_PAT", "")
+COZE_BOT_ID = os.getenv("COZE_BOT_ID", "")
 
 # 全局 Coze 客户端（懒加载）
 _client: Coze | None = None
