@@ -152,14 +152,14 @@ function showEditProfileModal(profile) {
           <div class="form-group">
             <label class="form-label">技能标签</label>
             <div class="skill-tags" id="edit-skills-tags">
-              ${skills.map(s => `<span class="skill-tag">${s}<span class="remove-tag" data-type="skills" data-value="${s}">✕</span></span>`).join('')}
+              ${skills.map(s => `<span class="skill-tag">${s}<span class="remove-tag" data-type="skills" data-value="${s}"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></span>`).join('')}
               <button class="add-tag-btn" id="add-skill-btn">+ 添加</button>
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">证书标签</label>
             <div class="skill-tags" id="edit-certs-tags">
-              ${certificates.map(c => `<span class="skill-tag" style="background:#FEF3C7;color:#92400E;">${c}<span class="remove-tag" data-type="certs" data-value="${c}">✕</span></span>`).join('')}
+              ${certificates.map(c => `<span class="skill-tag" style="background:#FEF3C7;color:#92400E;">${c}<span class="remove-tag" data-type="certs" data-value="${c}"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></span>`).join('')}
               <button class="add-tag-btn" id="add-cert-btn">+ 添加</button>
             </div>
           </div>
@@ -177,8 +177,8 @@ function showEditProfileModal(profile) {
   let editCerts = [...certificates];
 
   function refreshTags() {
-    document.getElementById('edit-skills-tags').innerHTML = editSkills.map(s => `<span class="skill-tag">${s}<span class="remove-tag" data-type="skills" data-value="${s}">✕</span></span>`).join('') + '<button class="add-tag-btn" id="add-skill-btn">+ 添加</button>';
-    document.getElementById('edit-certs-tags').innerHTML = editCerts.map(c => `<span class="skill-tag" style="background:#FEF3C7;color:#92400E;">${c}<span class="remove-tag" data-type="certs" data-value="${c}">✕</span></span>`).join('') + '<button class="add-tag-btn" id="add-cert-btn">+ 添加</button>';
+    document.getElementById('edit-skills-tags').innerHTML = editSkills.map(s => `<span class="skill-tag">${s}<span class="remove-tag" data-type="skills" data-value="${s}"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></span>`).join('') + '<button class="add-tag-btn" id="add-skill-btn"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 添加</button>';
+    document.getElementById('edit-certs-tags').innerHTML = editCerts.map(c => `<span class="skill-tag" style="background:#FEF3C7;color:#92400E;">${c}<span class="remove-tag" data-type="certs" data-value="${c}"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></span>`).join('') + '<button class="add-tag-btn" id="add-cert-btn"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 添加</button>';
     bindTagEvents();
   }
 

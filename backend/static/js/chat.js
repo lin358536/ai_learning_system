@@ -22,7 +22,7 @@ function initChatPage() {
       <div class="chat-main">
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-area">
-          <button class="sidebar-open-btn" id="sidebar-open" title="展开会话列表">☰</button>
+          <button class="sidebar-open-btn" id="sidebar-open" title="展开会话列表"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <input class="chat-input" id="chat-input" placeholder="输入消息，和小途对话..." maxlength="1000" autocomplete="off">
           <button class="chat-send" id="btn-send">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -76,8 +76,8 @@ function renderSidebar(filter) {
   let html = `
     <div class="sidebar-header">
       <div style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary);">对话历史</div>
-      <button class="sidebar-new-btn" id="btn-new-chat" title="新对话">✚</button>
-      <button class="sidebar-close-btn" id="sidebar-close">✕</button>
+      <button class="sidebar-new-btn" id="btn-new-chat" title="新对话"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      <button class="sidebar-close-btn" id="sidebar-close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="sidebar-search-wrap">
       <svg class="search-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -98,7 +98,7 @@ function renderSidebar(filter) {
         const isActive = item.conversation_id === currentConversationId;
         html += `
           <div class="chat-item${isActive ? ' active' : ''}" data-conv-id="${item.conversation_id}">
-            <div class="chat-item-icon">${item.icon || '💬'}</div>
+            <div class="chat-item-icon">${item.icon || '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'}</div>
             <div class="chat-item-content">
               <div class="chat-item-title">${item.title || '新对话'}</div>
               <div class="chat-item-meta">
@@ -106,7 +106,7 @@ function renderSidebar(filter) {
                 <span class="chat-item-count">${item.message_count} 条</span>
               </div>
             </div>
-            <button class="chat-item-delete" data-conv-id="${item.conversation_id}" title="删除对话">✕</button>
+            <button class="chat-item-delete" data-conv-id="${item.conversation_id}" title="删除对话"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </div>`;
       }
     }
@@ -306,7 +306,7 @@ function showWelcome() {
   if (!messagesEl) return;
   messagesEl.innerHTML = `
     <div class="welcome-message">
-      <div class="welcome-icon">🎓</div>
+      <div class="welcome-icon"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
       <h3>你好，欢迎使用智途校园</h3>
       <p>我是小途，你的校园成长助手。<br>我可以帮你制定学习规划、生成求职简历、解答学习问题。</p>
     </div>`;
@@ -368,10 +368,10 @@ async function saveContent(intent, fullContent) {
     });
     if (res.success) {
       showToast(`${label}已保存，可在「${label}」页面查看`, 'success');
-      if (card) card.innerHTML = `<div style="color:var(--primary);font-size:13px;padding:4px 0;">✓ ${label}已保存</div>`;
+      if (card) card.innerHTML = `<div style="color:var(--primary);font-size:13px;padding:4px 0;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> ${label}已保存</div>`;
     } else {
       showToast(res.error?.message || '保存失败', 'error');
-      if (card) card.querySelector('.action-card-actions').innerHTML = `<button class="btn btn-primary btn-sm" id="${btnId}">✓ 重试保存</button>`;
+      if (card) card.querySelector('.action-card-actions').innerHTML = `<button class="btn btn-primary btn-sm" id="${btnId}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> 重试保存</button>`;
       document.getElementById(btnId)?.addEventListener('click', () => saveContent(intent, fullContent));
     }
   } catch (e) {
@@ -390,7 +390,7 @@ function appendActionCard(intent, fullContent) {
         <div class="msg-avatar">途</div>
         <div>
           <div class="action-card">
-            <div class="action-card-title">📋 检测到学习规划</div>
+            <div class="action-card-title"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> 检测到学习规划</div>
             <div class="action-card-body">小途为你生成了学习规划内容，是否保存到「我的规划」？</div>
             <div class="action-card-actions">
               <button class="btn btn-primary btn-sm" id="btn-save-plan">✓ 保存规划</button>
@@ -405,7 +405,7 @@ function appendActionCard(intent, fullContent) {
         <div class="msg-avatar">途</div>
         <div>
           <div class="action-card">
-            <div class="action-card-title">📄 检测到简历</div>
+            <div class="action-card-title"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 检测到简历</div>
             <div class="action-card-body">小途为你生成了简历内容，是否保存到「我的简历」？</div>
             <div class="action-card-actions">
               <button class="btn btn-primary btn-sm" id="btn-save-resume">✓ 保存简历</button>

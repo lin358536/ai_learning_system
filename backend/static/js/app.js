@@ -100,7 +100,7 @@ function renderNavbar() {
         </div>
         智途校园
       </div>
-      <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+      <button class="sidebar-toggle" id="sidebar-toggle"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="nav-links">
         <a class="nav-link" data-page="chat" href="#/chat">首页</a>
         <a class="nav-link" data-page="learn" href="#/learn">学习</a>
@@ -180,7 +180,7 @@ function handleRoute() {
   if (result) {
     result.handler(contentEl, result.params);
   } else {
-    contentEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">页面不存在</div></div>';
+    contentEl.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="empty-text">页面不存在</div></div>';
   }
 }
 
