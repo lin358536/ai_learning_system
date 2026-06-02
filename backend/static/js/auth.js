@@ -90,7 +90,7 @@ function initLoginPage() {
       if (result.success && result.data) {
         setToken(result.data.token);
         setUser(result.data.user);
-        window.location.hash = '#/chat';
+        window.location.hash = isRegister ? '#/onboarding' : '#/chat';
       } else {
         errEl.textContent = result.error?.message || '操作失败';
         errEl.style.display = 'block';

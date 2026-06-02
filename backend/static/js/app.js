@@ -153,13 +153,13 @@ function handleRoute() {
   const result = matchRoute(hash);
 
   // 检查是否需要登录
-  if (hash !== '#/login') {
+  if (hash !== '#/login' && hash !== '#/onboarding') {
     if (!getToken()) { navigateTo('#/login'); return; }
   }
 
-    // 清空页面（登录页不需要导航）
+    // 清空页面（登录页/引导页不需要导航）
     const app = document.getElementById('app');
-    if (hash === '#/login') {
+    if (hash === '#/login' || hash === '#/onboarding') {
       app.innerHTML = '';
     } else {
       app.innerHTML = renderNavbar();
@@ -170,8 +170,9 @@ function handleRoute() {
       });
     }
 
-  const contentEl = hash === '#/login' ? app : document.createElement('div');
-  if (hash !== '#/login') {
+  const fullPageRoutes = ['#/login', '#/onboarding'];
+  const contentEl = fullPageRoutes.includes(hash) ? app : document.createElement('div');
+  if (!fullPageRoutes.includes(hash)) {
     contentEl.id = 'page-content';
     contentEl.className = 'page-content';
     app.appendChild(contentEl);
