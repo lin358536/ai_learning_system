@@ -503,3 +503,8 @@
 @media (min-width: 431px) and (max-width: 1024px) {
   .onboarding-card { max-width: 440px; }
 }
+
+
+.form-input {
+  width: stretch;
+}
