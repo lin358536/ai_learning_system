@@ -563,5 +563,5 @@ async function sendMessage() {
 
 // ── 路由注册 ────────────────────────────────────────────────
 registerRoute('#/chat', (el) => { initChatPage(); });
-registerRoute('#/', (el) => { window.location.hash = '#/chat'; });
-registerRoute('', (el) => { window.location.hash = '#/chat'; });
+registerRoute('#/', (el) => { window.location.hash = '#/index'; });
+registerRoute('', (el) => { window.location.hash = '#/index'; });
