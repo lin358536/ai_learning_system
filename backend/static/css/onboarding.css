@@ -1,0 +1,510 @@
+/* ========== 智途校园 — 首次登录画像引导页 ========== */
+
+.onboarding-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  z-index: 999;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+}
+
+/* 顶部步骤栏 - Liquid Glass */
+.onboarding-header {
+  position: relative;
+  padding: max(env(safe-area-inset-top, 0px), 20px) 24px 16px;
+  background: oklch(100% 0 0 / 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid oklch(0% 0 0 / 0.06);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .onboarding-header {
+    /* background: oklch(18% 0 0 / 0.85); */
+    border-bottom: 1px solid oklch(100% 0 0 / 0.08);
+  }
+}
+
+.onboarding-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #D1D5DB;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.step-dot.active {
+  width: 32px;
+  border-radius: 5px;
+  background: var(--primary);
+  box-shadow: 0 2px 8px rgba(42, 157, 143, 0.35);
+}
+
+.step-dot.completed {
+  background: var(--primary);
+  opacity: 0.7;
+}
+
+.step-dot.completed::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.step-counter {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+
+/* 导航按钮区 */
+.onboarding-nav-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 36px;
+}
+
+.onboarding-btn-back {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
+}
+.onboarding-btn-back:hover { background: var(--primary-light); }
+.onboarding-btn-back:disabled { visibility: hidden; }
+
+.onboarding-btn-skip {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  margin-left: auto;
+}
+.onboarding-btn-skip:hover { color: var(--text-primary); background: rgba(0,0,0,0.05); }
+
+/* 内容区 */
+.onboarding-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 32px 24px 130px;
+  position: relative;
+}
+
+.onboarding-card {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* 步骤过渡动画 */
+.step-slide {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-slide.forward-enter {
+  animation: slideInRight 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+.step-slide.backward-enter {
+  animation: slideInLeft 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 图标 */
+.onboarding-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.onboarding-icon svg {
+  width: 72px;
+  height: 72px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.onboarding-description {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.onboarding-sub-description {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* 表单 */
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.segmented-control {
+  display: flex;
+  background: #E5E7EB;
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented-option {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: center;
+}
+
+.segmented-option:hover {
+  color: var(--text-primary);
+}
+
+.segmented-option.selected {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  font-weight: 600;
+}
+
+/* 卡片选择 */
+.cards-horizontal {
+  display: flex;
+  gap: 12px;
+}
+
+.card-option {
+  flex: 1;
+  padding: 20px 12px;
+  border: 2px solid #D1D5DB;
+  border-radius: 16px;
+  background: var(--bg-white);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s;
+}
+
+.card-option:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.card-option.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+}
+
+.card-option-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-option-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Toggle 开关 */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--bg-white);
+  border: 1px solid #D1D5DB;
+  border-radius: 14px;
+}
+
+.toggle-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggle-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.toggle-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 30px;
+  background: #D1D5DB;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.toggle-switch.active {
+  background: var(--primary);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-switch.active::after {
+  transform: translateX(20px);
+}
+
+/* Tag Input */
+.tag-input-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-white);
+  border: 1px solid #D1D5DB;
+  border-radius: 14px;
+  min-height: 52px;
+  align-items: center;
+}
+
+.tag-input-area:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.12);
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tag-remove {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  padding: 0;
+}
+.tag-remove:hover { opacity: 1; background: rgba(42, 157, 143, 0.15); }
+
+.tag-input-field {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: transparent;
+  flex: 1;
+  min-width: 100px;
+  padding: 4px 0;
+}
+
+.tag-input-field::placeholder {
+  color: #9CA3AF;
+}
+
+.tag-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* 底部操作栏 - Liquid Glass */
+.onboarding-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+  background: oklch(100% 0 0 / 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid oklch(0% 0 0 / 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .onboarding-footer {
+    /* background: oklch(18% 0 0 / 0.88); */
+    border-top: 1px solid oklch(100% 0 0 / 0.08);
+  }
+}
+
+.onboarding-footer .btn {
+  min-width: 110px;
+  min-height: 48px;
+  font-size: 16px;
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+/* 表单标签 */
+.onboarding-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.onboarding-field-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+  line-height: 1.4;
+}
+
+/* 尊重 reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .step-dot,
+  .segmented-option,
+  .card-option,
+  .toggle-switch,
+  .toggle-switch::after {
+    transition-duration: 0.01ms !important;
+  }
+  .step-slide.forward-enter,
+  .step-slide.backward-enter {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* 响应式 */
+@media (max-width: 430px) {
+  .onboarding-content { padding: 24px 16px 130px; }
+  .onboarding-card { max-width: 100%; }
+  .onboarding-description { font-size: 20px; }
+  .onboarding-sub-description { font-size: 14px; }
+  .cards-horizontal { flex-direction: column; gap: 8px; }
+  .card-option { padding: 16px 12px; }
+  .onboarding-header { padding-left: 16px; padding-right: 16px; }
+  .onboarding-footer { padding-left: 16px; padding-right: 16px; }
+}
+
+@media (min-width: 431px) and (max-width: 1024px) {
+  .onboarding-card { max-width: 440px; }
+}
+
+
+.form-input {
+  width: stretch;
+}
