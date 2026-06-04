@@ -102,10 +102,11 @@ function renderNavbar() {
       </div>
       <button class="sidebar-toggle" id="sidebar-toggle"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="nav-links">
-        <a class="nav-link" data-page="chat" href="#/chat">首页</a>
+        <a class="nav-link" data-page="index" href="#/index">首页</a>
         <a class="nav-link" data-page="learn" href="#/learn">学习</a>
         <a class="nav-link" data-page="plans" href="#/plans">规划</a>
         <a class="nav-link" data-page="resumes" href="#/resumes">简历</a>
+        <a class="nav-link" data-page="chat" href="#/chat">聊天</a>
         <a class="nav-link" data-page="profile" href="#/profile">我的</a>
       </div>
       <div class="nav-right">
@@ -164,7 +165,7 @@ function handleRoute() {
     } else {
       app.innerHTML = renderNavbar();
       // 更新导航高亮
-      const page = hash.split('/')[1] || 'chat';
+      const page = hash.split('/')[1] || 'index';
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.toggle('active', link.dataset.page === page);
       });
