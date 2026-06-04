@@ -1,16 +1,18 @@
 /* ========== 智途校园 — 对话页（flex 重构 + 侧边栏折叠） ========== */
 
-/* ── 整体布局：突破 page-content 约束 ── */
+/* ── 整体布局：突破 page-content 约束，横向占满全屏 ── */
 .chat-layout {
   display: flex;
-  height: calc(100vh - var(--nav-height) - 20px);
-  /* margin-top: calc(-1 * var(--nav-height) - 20px); */
-  /* margin-left: -20px; */
-  /* margin-right: -20px; */
-  /* margin-bottom: -40px; */
+  height: calc(100vh - var(--nav-height));
   overflow: hidden;
-  /* margin-top: -19px; */
   background: var(--bg);
+}
+
+/* 当页面有聊天布局时，父容器扩展至全屏宽度 */
+.page-content:has(.chat-layout) {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 /* ── 侧边栏 ── */
@@ -263,7 +265,7 @@
 .msg {
   display: flex;
   gap: 10px;
-  max-width: 680px;
+  max-width: 800px;
   animation: msgIn 0.3s ease;
 }
 
@@ -340,7 +342,7 @@
   border-radius: var(--radius-sm);
   padding: 16px;
   margin-top: 4px;
-  max-width: 640px;
+  max-width: 780px;
   box-shadow: var(--shadow-sm);
 }
 
