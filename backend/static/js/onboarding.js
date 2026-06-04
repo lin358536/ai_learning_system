@@ -29,13 +29,7 @@ function initOnboardingPage(contentEl) {
               <div class="step-dot ${i === 0 ? 'active' : ''}" data-step="${i + 1}"></div>
             `).join('')}
           </div>
-          <div class="onboarding-nav-top">
-            <button class="onboarding-btn-back" id="ob-btn-back" disabled>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-              上一步
-            </button>
-            <button class="onboarding-btn-skip" id="ob-btn-skip">跳过引导</button>
-          </div>
+
         </div>
         <div class="onboarding-content" id="ob-content">
           <div class="step-slide forward-enter" id="ob-step-slide">
@@ -43,8 +37,14 @@ function initOnboardingPage(contentEl) {
           </div>
         </div>
         <div class="onboarding-footer" id="ob-footer">
-          <div id="ob-footer-left"></div>
-          <button class="btn btn-primary" id="ob-btn-next">开始填写</button>
+          <div class="onboarding-footer-inner">
+            <button class="onboarding-btn-back" id="ob-btn-back" disabled style="display:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              上一步
+            </button>
+            <button class="onboarding-btn-skip" id="ob-btn-skip" style="display:none">跳过引导</button>
+            <button class="btn btn-primary" id="ob-btn-next">开始填写</button>
+          </div>
         </div>
       </div>`;
   }
@@ -155,7 +155,7 @@ function initOnboardingPage(contentEl) {
       { value: '未确定', desc: '还在探索，想了解更多可能', icon: '🔍' }
     ];
     return `
-      <div class="onboarding-card">
+      <div class="onboarding-card onboarding-card--step4">
         <div class="onboarding-icon">
           <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
         </div>
@@ -266,14 +266,11 @@ function initOnboardingPage(contentEl) {
 
     const isSpecial = currentStep === 1 || currentStep === totalSteps;
     const header = document.getElementById('ob-header');
-    const skipBtn = document.getElementById('ob-btn-skip');
 
     if (isSpecial) {
       header.style.display = 'none';
-      skipBtn.style.display = 'none';
     } else {
       header.style.display = '';
-      skipBtn.style.display = '';
       document.getElementById('ob-step-counter').textContent = `第 ${currentStep - 1} / ${totalSteps - 2} 步`;
       document.querySelectorAll('#ob-steps .step-dot').forEach(dot => {
         const s = parseInt(dot.dataset.step, 10);
@@ -284,7 +281,15 @@ function initOnboardingPage(contentEl) {
     }
 
     const backBtn = document.getElementById('ob-btn-back');
-    backBtn.disabled = currentStep === 1 || currentStep === totalSteps;
+    const skipBtn = document.getElementById('ob-btn-skip');
+    if (currentStep > 1 && currentStep < totalSteps) {
+      backBtn.style.display = '';
+      backBtn.disabled = false;
+      skipBtn.style.display = '';
+    } else {
+      backBtn.style.display = 'none';
+      skipBtn.style.display = 'none';
+    }
 
     const nextBtn = document.getElementById('ob-btn-next');
     if (currentStep === 1) {
@@ -293,14 +298,6 @@ function initOnboardingPage(contentEl) {
       nextBtn.textContent = '进入智途校园';
     } else {
       nextBtn.textContent = '继续';
-    }
-
-    const leftDiv = document.getElementById('ob-footer-left');
-    if (currentStep > 1 && currentStep < totalSteps) {
-      leftDiv.innerHTML = '<button class="btn btn-outline" id="ob-btn-prev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> 上一步</button>';
-      document.getElementById('ob-btn-prev').addEventListener('click', onPrev);
-    } else {
-      leftDiv.innerHTML = '';
     }
 
     bindStepEvents();
