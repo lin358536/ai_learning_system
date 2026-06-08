@@ -100,7 +100,6 @@ function renderNavbar() {
         </div>
         智途校园
       </div>
-      <button class="sidebar-toggle" id="sidebar-toggle"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="nav-links">
         <a class="nav-link" data-page="index" href="#/index">首页</a>
         <a class="nav-link" data-page="learn" href="#/learn">学习</a>

@@ -236,6 +236,16 @@ ul, ol { list-style: none; }
   stroke: var(--text-disabled);
 }
 
+.feature-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-card.coming-soon .feature-card-header {
+  gap: 12px;
+}
+
 .feature-icon {
   width: 48px;
   height: 48px;
@@ -244,7 +254,7 @@ ul, ol { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .feature-icon svg {
@@ -254,10 +264,10 @@ ul, ol { list-style: none; }
 }
 
 .feature-name {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   color: #1D1D1F;
-  margin-bottom: 6px;
+  flex: 1;
 }
 
 .feature-card.coming-soon .feature-name { color: var(--text-disabled); }
@@ -266,7 +276,7 @@ ul, ol { list-style: none; }
   font-size: 14px;
   color: #6E6E73;
   line-height: 1.5;
-  margin: 8px 0 16px;
+  margin: 12px 0 0;
 }
 
 .feature-badge {
@@ -277,12 +287,15 @@ ul, ol { list-style: none; }
   border-radius: 6px;
   background: var(--badge-bg);
   color: var(--text-disabled);
+  flex-shrink: 0;
 }
 
 .feature-link {
   font-size: 14px;
   color: var(--primary);
   font-weight: 500;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
@@ -290,7 +303,56 @@ ul, ol { list-style: none; }
 }
 
 @media (max-width: 560px) {
-  .feature-grid { grid-template-columns: 1fr; }
+  .feature-page {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .feature-grid {
+    gap: 16px;
+  }
+
+  .feature-section-title {
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+
+  .feature-card {
+    padding: 16px;
+  }
+
+  .feature-card-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .feature-card.coming-soon .feature-card-header {
+    gap: 8px;
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .feature-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .feature-name {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+
+  .feature-desc {
+    display: none;
+  }
+
+  .feature-link, .feature-badge {
+    display: none;
+  }
 }
 
 /* 响应式 */

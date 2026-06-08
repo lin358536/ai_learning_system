@@ -58,7 +58,6 @@ function initIndexPage() {
   content.innerHTML = `
     <div class="feature-page">
       <div class="feature-header">
-        <h1 class="feature-title">功能总览</h1>
         <p class="feature-subtitle">欢迎, ${userName} — 探索智途校园全部功能</p>
       </div>
 
@@ -93,13 +92,15 @@ function renderFeatureCard(feature) {
 
   return `
     <div class="${cardClass}" data-route="${feature.route || ''}" ${isComing ? '' : 'tabindex="0"'}>
-      <div class="feature-icon">${getFeatureIcon(feature.icon, isComing)}</div>
-      <h3 class="feature-name">${feature.name}</h3>
+      <div class="feature-card-header">
+        <div class="feature-icon">${getFeatureIcon(feature.icon, isComing)}</div>
+        <h3 class="feature-name">${feature.name}</h3>
+        ${isComing
+          ? '<span class="feature-badge">即将推出</span>'
+          : '<span class="feature-link">进入 →</span>'
+        }
+      </div>
       <p class="feature-desc">${feature.desc}</p>
-      ${isComing
-        ? '<span class="feature-badge">即将推出</span>'
-        : '<span class="feature-link">进入 →</span>'
-      }
     </div>
   `;
 }

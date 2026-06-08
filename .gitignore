@@ -33,3 +33,7 @@ htmlcov/
 node_modules/
 
 opencode.json
+apple-design_agent.md
+todo
+.opencode/*
+docs/superpowers/*
