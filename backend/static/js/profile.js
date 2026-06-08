@@ -5,7 +5,13 @@ function initProfilePage() {
     <link rel="stylesheet" href="/static/css/profile.css">
     <div class="card" style="margin-bottom:16px;">
       <div class="profile-header">
-        <div class="profile-avatar-lg" id="profile-avatar">-</div>
+        <div class="profile-avatar-wrapper" id="avatar-upload-trigger" title="点击更换头像">
+          <div class="profile-avatar-lg" id="profile-avatar">-</div>
+          <div class="avatar-overlay">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
         <div>
           <div class="profile-name" id="profile-name">加载中...</div>
           <div class="profile-id" id="profile-id"></div>
@@ -32,6 +38,30 @@ function initProfilePage() {
     window.location.hash = '#/login';
   });
 
+  document.getElementById('avatar-upload-trigger').addEventListener('click', () => {
+    document.getElementById('avatar-file-input').click();
+  });
+
+  document.getElementById('avatar-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const result = await ProfileAPI.uploadAvatar(file);
+      if (result.success) {
+        showToast('头像更新成功', 'success');
+        const user = getUser();
+        if (user) {
+          user.avatar_url = result.data.avatar_url;
+          setUser(user);
+        }
+        loadProfile();
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+    e.target.value = '';
+  });
+
   loadProfile();
 }
 
@@ -43,9 +73,18 @@ async function loadProfile() {
       const user = meRes.data;
       const profile = user.profile || {};
 
-      document.getElementById('profile-avatar').textContent = user.name ? user.name[0] : '?';
+      const avatarEl = document.getElementById('profile-avatar');
+      if (user.avatar_url) {
+        avatarEl.textContent = '';
+        avatarEl.style.backgroundImage = `url(${user.avatar_url})`;
+        avatarEl.style.backgroundSize = 'cover';
+        avatarEl.style.backgroundPosition = 'center';
+      } else {
+        avatarEl.textContent = user.name ? user.name[0] : '?';
+        avatarEl.style.backgroundImage = '';
+      }
       document.getElementById('profile-name').textContent = user.name || user.username;
-      document.getElementById('profile-id').textContent = `用户名：${user.username}${user.email ? ' · ' + user.email : ''}`;
+      document.getElementById('profile-id').textContent = `${user.username}${user.email ? ' · ' + user.email : ''}`;
 
       // 积分
       if (pointsRes.success && pointsRes.data) {

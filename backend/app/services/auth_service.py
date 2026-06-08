@@ -46,6 +46,7 @@ class AuthService:
                 "username": user.username,
                 "name": user.name,
                 "email": user.email,
+                "avatar_url": user.avatar_url,
             },
             "token": token,
         }
@@ -70,6 +71,7 @@ class AuthService:
                 "username": user.username,
                 "name": user.name,
                 "email": user.email,
+                "avatar_url": user.avatar_url,
             },
             "token": token,
         }
@@ -91,5 +93,6 @@ class AuthService:
             "username": user.username,
             "name": user.name,
             "email": user.email,
+            "avatar_url": user.avatar_url,
             "profile": profile_data,
         }

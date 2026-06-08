@@ -107,7 +107,24 @@ const ChatAPI = {
 // ========== 个人画像 ==========
 const ProfileAPI = {
   async get() { return request('/profile'); },
-  async update(data) { return request('/profile', { method: 'PUT', body: JSON.stringify(data) }); }
+  async update(data) { return request('/profile', { method: 'PUT', body: JSON.stringify(data) }); },
+  async uploadAvatar(file) {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE}/profile/avatar`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData,
+    });
+    if (res.status === 401) { removeToken(); window.location.hash = '#/login'; throw new Error('登录已过期'); }
+    if (!res.ok) {
+      let errMsg = '上传失败';
+      try { const b = await res.json(); errMsg = b?.detail?.error?.message || b?.error?.message || errMsg; } catch {}
+      throw new Error(errMsg);
+    }
+    return res.json();
+  }
 };
 
 // ========== 学习规划 ==========

@@ -1,5 +1,5 @@
 # 智途校园 - 画像路由
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -40,3 +40,14 @@ async def update_profile(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={"success": False, "error": {"code": "NOT_FOUND", "message": str(e)}},
         )
+
+
+@router.post("/avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    service = ProfileService()
+    result = await service.upload_avatar(file, user["user_id"], db)
+    return {"success": True, "data": result}

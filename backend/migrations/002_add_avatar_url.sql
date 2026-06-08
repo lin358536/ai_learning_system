@@ -1,0 +1,2 @@
+-- 智途校园 - 新增用户头像字段（2026-06-08）
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255) DEFAULT NULL COMMENT '用户头像URL';

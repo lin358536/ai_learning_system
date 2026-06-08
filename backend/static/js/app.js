@@ -109,7 +109,7 @@ function renderNavbar() {
         <a class="nav-link" data-page="profile" href="#/profile">我的</a>
       </div>
       <div class="nav-right">
-        <div class="nav-avatar" title="${user?.name || '未登录'}">${initial}</div>
+        ${user?.avatar_url ? `<img class="nav-avatar" src="${user.avatar_url}" alt="${user?.name || '未登录'}" title="${user?.name || '未登录'}" style="object-fit:cover;">` : `<div class="nav-avatar" title="${user?.name || '未登录'}">${initial}</div>`}
       </div>
     </nav>
     <div class="toast-container" id="toast-container"></div>`;

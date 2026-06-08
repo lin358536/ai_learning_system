@@ -167,7 +167,7 @@ ul, ol { list-style: none; }
 .add-tag-btn:hover { border-color: var(--primary); color: var(--primary); }
 
 /* 页面内容区 */
-.page-content {padding-top: calc(var(--nav-height) + 0px);/* padding-bottom: 40px; */max-width: 1100px;margin: 0 auto;padding-left: 20px;padding-right: 20px;/* overflow: hidden; */}
+.page-content {padding-top: calc(var(--nav-height) + 16px);/* padding-bottom: 40px; */max-width: 1100px;margin: 0 auto;padding-left: 20px;padding-right: 20px;/* overflow: hidden; */}
 
 /* 列表头 */
 .list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
