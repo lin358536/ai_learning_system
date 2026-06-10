@@ -94,5 +94,7 @@ class AuthService:
             "name": user.name,
             "email": user.email,
             "avatar_url": user.avatar_url,
+            "student_id": user.student_id,
+            "created_at": user.created_at.isoformat() if user.created_at else None,
             "profile": profile_data,
         }
