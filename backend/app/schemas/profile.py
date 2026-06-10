@@ -1,5 +1,5 @@
 # 智途校园 - 画像相关Schema
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 
 class ProfileOut(BaseModel):
@@ -38,7 +38,7 @@ class ProfileUpdateRequest(BaseModel):
 
 
 class BasicInfoUpdateRequest(BaseModel):
-    email: str | None = Field(None, max_length=100, description="邮箱")
+    email: EmailStr | None = Field(None, description="邮箱")
 
 
 class ProfileResponse(BaseModel):

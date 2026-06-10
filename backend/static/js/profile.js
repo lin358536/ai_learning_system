@@ -94,7 +94,7 @@ async function loadProfile() {
 
       // 基本信息
       document.getElementById('basic-info').innerHTML = `
-        <div class="info-row"><span class="info-label">邮箱</span><span class="info-value">${user.email || '未设置'}</span></div>
+        <div class="info-row"><span class="info-label">邮箱</span><span class="info-value">${user.email || '未设置'}</span><button class="btn btn-ghost btn-sm" id="btn-edit-email" style="margin-left:auto;">编辑</button></div>
         <div class="info-row"><span class="info-label">注册时间</span><span class="info-value">${formatDateShort(meRes.data.created_at)}</span></div>
         <div class="info-row"><span class="info-label">积分</span><span class="info-value" style="color:var(--primary);font-weight:600;">${pointsRes.data?.total || 0} 分</span></div>`;
 
@@ -118,6 +118,7 @@ async function loadProfile() {
         </div>`;
 
       document.getElementById('btn-edit-profile').addEventListener('click', () => showEditProfileModal(profile));
+      document.getElementById('btn-edit-email').addEventListener('click', () => showEditEmailModal(user));
     }
   } catch (e) {
     showToast('加载个人信息失败：' + e.message, 'error');
@@ -269,6 +270,59 @@ function showEditProfileModal(profile) {
         modal.remove();
         // 刷新用户信息
         setUser(getUser()); // 保持用户数据
+        initProfilePage();
+      }
+    } catch (e) {
+      showToast(e.message, 'error');
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+
+  document.getElementById('close-modal').addEventListener('click', () => modal.remove());
+  document.getElementById('cancel-edit').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+}
+
+function showEditEmailModal(user) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal" style="width:400px;">
+      <div class="modal-header">
+        <h3>修改邮箱</h3>
+        <button class="modal-close" id="close-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">邮箱地址</label>
+          <input class="form-input" id="edit-email" type="email" value="${user.email || ''}" placeholder="请输入邮箱">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="cancel-edit">取消</button>
+        <button class="btn btn-primary" id="save-email">保存</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  document.getElementById('save-email').addEventListener('click', async () => {
+    const email = document.getElementById('edit-email').value.trim();
+    if (!email) { showToast('请输入邮箱', 'warning'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('请输入有效的邮箱地址', 'warning'); return; }
+
+    const saveBtn = document.getElementById('save-email');
+    saveBtn.disabled = true;
+    try {
+      const result = await ProfileAPI.updateBasic({ email });
+      if (result.success) {
+        showToast('邮箱更新成功', 'success');
+        const u = getUser();
+        if (u) {
+          u.email = result.data.email;
+          setUser(u);
+        }
+        modal.remove();
         initProfilePage();
       }
     } catch (e) {

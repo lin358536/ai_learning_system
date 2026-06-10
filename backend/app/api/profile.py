@@ -37,10 +37,19 @@ async def update_basic_info(
         return {"success": True, "data": data}
     except ValueError as e:
         err_msg = str(e)
-        is_conflict = "邮箱" in err_msg
+        if "不能为空" in err_msg:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"success": False, "error": {"code": "INVALID_INPUT", "message": err_msg}},
+            )
+        if "已被注册" in err_msg:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={"success": False, "error": {"code": "CONFLICT", "message": err_msg}},
+            )
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT if is_conflict else status.HTTP_404_NOT_FOUND,
-            detail={"success": False, "error": {"code": "CONFLICT" if is_conflict else "NOT_FOUND", "message": err_msg}},
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"success": False, "error": {"code": "NOT_FOUND", "message": err_msg}},
         )
 
 
