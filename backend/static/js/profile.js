@@ -14,7 +14,7 @@ function initProfilePage() {
         <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
         <div>
           <div class="profile-name" id="profile-name">加载中...</div>
-          <div class="profile-id" id="profile-id"></div>
+          
         </div>
         <div style="margin-left:auto;" id="profile-points"></div>
       </div>
@@ -84,7 +84,7 @@ async function loadProfile() {
         avatarEl.style.backgroundImage = '';
       }
       document.getElementById('profile-name').textContent = user.name || user.username;
-      document.getElementById('profile-id').textContent = `${user.username}${user.email ? ' · ' + user.email : ''}`;
+      // document.getElementById('profile-id').textContent = `${user.username}${user.email ? ' · ' + user.email : ''}`;
 
       // 积分
       if (pointsRes.success && pointsRes.data) {

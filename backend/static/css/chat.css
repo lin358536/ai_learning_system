@@ -13,7 +13,8 @@
   max-width: none;
   padding-left: 0;
   padding-right: 0;
-  padding-top: 0;
+  padding-top: calc(var(--nav-height));
+  padding-bottom: 0px;
 }
 
 /* ── 侧边栏 ── */
