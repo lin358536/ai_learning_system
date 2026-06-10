@@ -7,53 +7,68 @@ function initIndexPage() {
   const user = getUser();
   const userName = user?.name || '用户';
 
-  const features = [
+  const categories = [
     {
-      name: 'AI 聊天',
-      desc: '智能对话，学习辅导与答疑',
-      route: '#/chat',
-      status: 'live',
-      icon: 'chat'
+      title: '学业与升学规划',
+      subtitle: '怎么学、怎么考 — 从日常学习到学历提升',
+      features: [
+        {
+          name: '学习规划',
+          desc: 'AI 定制学习计划，任务管理',
+          route: '#/plans',
+          status: 'live',
+          icon: 'checklist'
+        },
+        {
+          name: '升本方案规划',
+          desc: '个性化升本备考方案',
+          route: null,
+          status: 'coming',
+          icon: 'rocket'
+        }
+      ]
     },
     {
-      name: '职业能力测评',
-      desc: '能力雷达图 + 积分 + 排行榜',
-      route: '#/learn',
-      status: 'live',
-      icon: 'radar'
+      title: '职业发展与就业',
+      subtitle: '我是谁、要去哪 — 从职业探索到求职落地',
+      features: [
+        {
+          name: '职业能力测评',
+          desc: '能力雷达图 + 积分 + 排行榜',
+          route: '#/learn',
+          status: 'live',
+          icon: 'radar'
+        },
+        {
+          name: '简历制作',
+          desc: '智能生成求职简历',
+          route: '#/resumes',
+          status: 'live',
+          icon: 'document'
+        },
+        {
+          name: '职业兴趣测试',
+          desc: '科学测评职业倾向',
+          route: null,
+          status: 'coming',
+          icon: 'target'
+        },
+      ]
     },
     {
-      name: '学习规划',
-      desc: 'AI 定制学习计划，任务管理',
-      route: '#/plans',
-      status: 'live',
-      icon: 'checklist'
-    },
-    {
-      name: '简历制作',
-      desc: '智能生成求职简历',
-      route: '#/resumes',
-      status: 'live',
-      icon: 'document'
-    },
-    {
-      name: '职业兴趣测试',
-      desc: '科学测评职业倾向',
-      route: null,
-      status: 'coming',
-      icon: 'target'
-    },
-    {
-      name: '升本方案规划',
-      desc: '个性化升本备考方案',
-      route: null,
-      status: 'coming',
-      icon: 'rocket'
+      title: '社交成长与心理支持',
+      subtitle: '心理健康与软实力 — 构建积极校园圈子',
+      features: [
+        {
+          name: 'AI 聊天',
+          desc: '智能对话，学习辅导与答疑',
+          route: '#/chat',
+          status: 'live',
+          icon: 'chat'
+        }
+      ]
     }
   ];
-
-  const liveFeatures = features.filter(f => f.status === 'live');
-  const comingFeatures = features.filter(f => f.status === 'coming');
 
   content.innerHTML = `
     <div class="feature-page">
@@ -61,19 +76,21 @@ function initIndexPage() {
         <p class="feature-subtitle">欢迎, ${userName} — 探索智途校园全部功能</p>
       </div>
 
-      <div class="feature-section">
-        <h2 class="feature-section-title">已上线功能 (${liveFeatures.length})</h2>
-        <div class="feature-grid">
-          ${liveFeatures.map(f => renderFeatureCard(f)).join('')}
-        </div>
-      </div>
-
-      <div class="feature-section">
-        <h2 class="feature-section-title">即将推出 (${comingFeatures.length})</h2>
-        <div class="feature-grid">
-          ${comingFeatures.map(f => renderFeatureCard(f)).join('')}
-        </div>
-      </div>
+      ${categories.map(cat => {
+        const liveCount = cat.features.filter(f => f.status === 'live').length;
+        const comingCount = cat.features.filter(f => f.status === 'coming').length;
+        const countLabel = liveCount > 0 && comingCount > 0
+          ? `${liveCount} 个已上线 · ${comingCount} 个即将推出`
+          : liveCount > 0 ? `${liveCount} 个功能` : `${comingCount} 个即将推出`;
+        return `
+          <div class="feature-section">
+            <h2 class="feature-section-title">${cat.title}</h2>
+            <div class="feature-grid">
+              ${cat.features.map(f => renderFeatureCard(f)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 

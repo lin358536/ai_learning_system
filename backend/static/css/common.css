@@ -631,13 +631,19 @@ ol {
 }
 
 .feature-section {
-  margin-bottom: 48px;
+  margin-bottom: 24px;
 }
 
 .feature-section-title {
   font-size: 20px;
   font-weight: 600;
   color: #1D1D1F;
+  margin-bottom: 4px;
+}
+
+.feature-section-subtitle {
+  font-size: 14px;
+  color: #6E6E73;
   margin-bottom: 20px;
 }
 
@@ -769,6 +775,7 @@ ol {
 
   .feature-grid {
     gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .feature-section-title {
@@ -777,13 +784,37 @@ ol {
   }
 
   .feature-card {
-    padding: 16px;
+    padding: 0px;
+    background: unset;
+    box-shadow: unset;
+    border-radius: unset;
   }
 
   .feature-card-header {
     flex-direction: column;
     align-items: center;
     gap: 8px;
+  }
+
+  .feature-card:hover {
+    transform: unset;
+    box-shadow: unset;
+  }
+
+  .feature-card:active {
+    transform: unset;
+    transition: unset;
+  }
+
+  .feature-card:focus-visible {
+    outline: unset;
+    outline-offset: unset;
+    border-radius: unset;
+  }
+
+  .feature-card.coming-soon:active {
+    transform: none;
+    box-shadow: unset;
   }
 
   .feature-card.coming-soon .feature-card-header {
@@ -801,7 +832,7 @@ ol {
   }
 
   .feature-name {
-    font-size: 16px;
+    font-size: 15px;
     margin-bottom: 0;
   }
 
