@@ -37,6 +37,10 @@ class ProfileUpdateRequest(BaseModel):
     certificates: list[str] | None = Field(None, description="证书列表")
 
 
+class BasicInfoUpdateRequest(BaseModel):
+    email: str | None = Field(None, max_length=100, description="邮箱")
+
+
 class ProfileResponse(BaseModel):
     success: bool = True
     data: ProfileOut

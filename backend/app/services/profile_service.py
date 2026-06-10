@@ -34,6 +34,25 @@ class ProfileService:
         result = await db.execute(select(UserProfile).where(UserProfile.user_id == user_id))
         return result.scalar_one_or_none()
 
+    async def update_basic_info(self, db: AsyncSession, user_id: int, data: dict) -> dict:
+        result = await db.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if user is None:
+            raise ValueError("用户不存在")
+
+        if "email" in data and data["email"] is not None:
+            if not data["email"].strip():
+                raise ValueError("邮箱不能为空")
+            existing = await db.execute(
+                select(User).where(User.email == data["email"], User.id != user_id)
+            )
+            if existing.scalar_one_or_none():
+                raise ValueError("邮箱已被注册")
+            user.email = data["email"]
+
+        await db.flush()
+        return {"email": user.email}
+
     async def update_profile(self, db: AsyncSession, user_id: int, data: dict) -> dict:
         profile = await self.get_profile(db, user_id)
         if profile is None:
