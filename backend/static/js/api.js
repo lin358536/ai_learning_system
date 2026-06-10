@@ -108,6 +108,7 @@ const ChatAPI = {
 const ProfileAPI = {
   async get() { return request('/profile'); },
   async update(data) { return request('/profile', { method: 'PUT', body: JSON.stringify(data) }); },
+  async updateBasic(data) { return request('/profile/basic', { method: 'PUT', body: JSON.stringify(data) }); },
   async uploadAvatar(file) {
     const token = getToken();
     const formData = new FormData();
