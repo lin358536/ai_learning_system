@@ -32,4 +32,6 @@ htmlcov/
 # 前端（如使用）
 node_modules/
 
-opencode.json
+opencode.json*.log
+backend/server.log
+backend/server_err.log
