@@ -46,3 +46,49 @@ def identify_intent(user_message: str) -> str | None:
         return tool.key
 
     return None
+
+
+# ── Agent 重构新增：从回复内容解析意图（移植自 coze_client._parse_intent） ──
+# 注意：coze_client.py 本体零改动，此处为逻辑复制，供 LangGraph 通道的 node_respond 使用。
+
+# 意图 → 技能 key 映射（SkillEngine 路由的语义来源；query_*/None 由 chat 技能兜底承接）
+INTENT_TO_SKILL: dict[str, str] = {
+    "generate_plan": "plan",
+    "generate_resume": "resume",
+}
+
+
+def parse_intent_from_reply(text: str) -> str:
+    """
+    从 AI 完整回复中解析意图。
+
+    仅当回复内容明显包含生成的规划/简历结构时才触发，
+    避免误匹配功能描述类回复。
+
+    Returns:
+        generate_plan / generate_resume / chat（封闭集）
+    """
+    text_lower = text.lower()
+
+    # 规划相关 — 关键词匹配 + 结构化内容验证
+    plan_keywords = [
+        "学习规划", "学习计划", "学习路线", "制定规划", "制定计划",
+        "成长路线", "发展路径", "学习方案", "学习路径", "成长规划",
+    ]
+    plan_keyword_hit = sum(1 for kw in plan_keywords if kw in text_lower)
+
+    # 结构化内容关键词（只要有阶段+任务/目标 就判定）
+    plan_structure = ["阶段", "步骤", "第", "周计划", "月计划", "目标", "时间安排", "任务清单"]
+    plan_structure_hit = sum(1 for kw in plan_structure if kw in text_lower)
+
+    # 判定条件：有关键词+至少2个结构词，或者无关键词但有3+个结构词（AI可能不用关键词但输出完整结构）
+    if (plan_keyword_hit >= 1 and plan_structure_hit >= 2) or plan_structure_hit >= 3:
+        return "generate_plan"
+
+    # 简历相关 — 需要同时出现简历关键词和个人信息结构
+    resume_keyword_hit = sum(1 for kw in ["简历", "求职简历", "个人简历", "我的简历"] if kw in text_lower)
+    resume_structure_hit = sum(1 for kw in ["教育背景", "工作经验", "项目经历", "专业技能", "自我评价", "求职意向", "联系方式"] if kw in text_lower)
+    if resume_keyword_hit >= 1 and resume_structure_hit >= 1:
+        return "generate_resume"
+
+    return "chat"

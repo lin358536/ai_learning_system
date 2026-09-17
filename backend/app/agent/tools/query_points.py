@@ -1,8 +1,15 @@
 # 智途校园 - 工具：查询积分
+from typing import TYPE_CHECKING
+
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.tools.base import BaseTool
 from app.services.points_service import PointsService
+
+if TYPE_CHECKING:
+    from langchain_core.tools import StructuredTool
+    from app.agent.tools.toolkit import ToolContext
 
 
 class QueryPointsTool(BaseTool):
@@ -39,3 +46,27 @@ class QueryPointsTool(BaseTool):
                 f"{recent_lines}"
             ),
         }
+
+
+# ── LangChain StructuredTool 工厂（Agent 重构新增，旧类原样保留） ──
+
+class QueryPointsArgs(BaseModel):
+    """query_points 入参（无参数，查询当前用户积分与排名）"""
+
+
+def make_tool(ctx: "ToolContext") -> "StructuredTool":
+    """构造绑定 ToolContext 的 LangChain 工具（复用旧 QueryPointsTool 的业务逻辑与 summary 文案）。"""
+    from langchain_core.tools import StructuredTool
+
+    async def _arun() -> str:
+        tool = QueryPointsTool()
+        result = await tool.execute(ctx.db, ctx.user_id)
+        return str(result.get("summary", ""))
+
+    return StructuredTool(
+        name="query_points",
+        description="查询当前用户的积分总数、排名和最近积分记录。无需参数。",
+        func=None,
+        coroutine=_arun,
+        args_schema=QueryPointsArgs,
+    )

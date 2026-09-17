@@ -34,6 +34,20 @@ class Settings(BaseSettings):
     QWEN_MODEL: str = "qwen3.5-flash"
     QWEN_BASE_URL: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
+    # DeepSeek（本地 LangChain Agent 默认 LLM）
+    DEEPSEEK_API_KEY: str = ""                       # key 留空待用户填写，禁止硬编码
+    DEEPSEEK_MODEL: str = "deepseek-flash"           # 模型名可配置，平台 ID 不同时改 .env 即可（默认须为平台合法 ID）
+    DEEPSEEK_BASE_URL: str = "https://api.deepseek.com/v1"
+
+    # Agent 通道开关：langgraph（本地智能体） | coze（扣子远程智能体）
+    AGENT_BACKEND: str = "langgraph"
+    AGENT_MAX_ITER: int = 8                          # LangGraph 工具循环最大轮数（防死循环）
+    PROMPT_HOT_RELOAD: bool = True                   # 技能 YAML prompt 热加载
+
+    # LLM 采样参数
+    LLM_TEMPERATURE: float = 0.7
+    LLM_MAX_TOKENS: int = 4096
+
     # 邮件
     SMTP_HOST: str = ""
     SMTP_PORT: int = 465

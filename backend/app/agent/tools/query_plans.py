@@ -1,8 +1,15 @@
 # 智途校园 - 工具：查询学习规划
+from typing import TYPE_CHECKING
+
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.tools.base import BaseTool
 from app.services.plan_service import PlanService
+
+if TYPE_CHECKING:
+    from langchain_core.tools import StructuredTool
+    from app.agent.tools.toolkit import ToolContext
 
 
 class QueryPlansTool(BaseTool):
@@ -40,3 +47,27 @@ class QueryPlansTool(BaseTool):
             "summary": f"你有 {len(plans)} 个学习规划：\n" + "\n".join(lines),
             "plans": plans,
         }
+
+
+# ── LangChain StructuredTool 工厂（Agent 重构新增，旧类原样保留） ──
+
+class QueryPlansArgs(BaseModel):
+    """query_plans 入参（无参数，查询当前用户全部规划）"""
+
+
+def make_tool(ctx: "ToolContext") -> "StructuredTool":
+    """构造绑定 ToolContext 的 LangChain 工具（复用旧 QueryPlansTool 的业务逻辑与 summary 文案）。"""
+    from langchain_core.tools import StructuredTool
+
+    async def _arun() -> str:
+        tool = QueryPlansTool()
+        result = await tool.execute(ctx.db, ctx.user_id)
+        return str(result.get("summary", ""))
+
+    return StructuredTool(
+        name="query_plans",
+        description="查询当前用户的学习规划列表（标题、状态、进度）。无需参数。",
+        func=None,
+        coroutine=_arun,
+        args_schema=QueryPlansArgs,
+    )

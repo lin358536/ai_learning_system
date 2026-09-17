@@ -1,4 +1,4 @@
-# 智途校园 - 对话路由（SSE流式 | Coze扣子智能体 | 自动保存规划/简历）
+# 智途校园 - 对话路由（SSE流式 | AGENT_BACKEND 双通道：LangGraph本地智能体 / Coze扣子 | 自动保存规划/简历）
 import json
 import re
 import uuid as uuid_lib
@@ -8,9 +8,15 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import get_settings
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.services.coze_client import chat_stream, build_context_message
+from app.agent.intent import identify_intent
+from app.agent.graph import build_agent_graph
+from app.agent.tools.toolkit import ToolContext
+from app.skills.skill_engine import get_skill_engine
+from app.llm import strip_think_tags
 from app.models.chat import ChatMessage
 from app.models.user import User
 from app.services.profile_service import ProfileService
@@ -25,7 +31,7 @@ router = APIRouter(tags=["对话"])
 
 class ChatRequest(BaseModel):
     message: str = Field(..., max_length=1000, description="用户消息")
-    conversation_id: str | None = Field(None, description="扣子会话ID")
+    conversation_id: str | None = Field(None, description="会话ID（本地UUID）")
 
 
 class SaveContentRequest(BaseModel):
@@ -40,7 +46,7 @@ async def chat(
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """SSE流式对话接口 — 查用户画像拼上下文后调用扣子智能体"""
+    """SSE流式对话接口 — AGENT_BACKEND 开关切 langgraph / coze 两条通道（切换只改 .env 一个键）"""
     user_id = user["user_id"]
 
     # 生成或复用 conversation_id
@@ -74,51 +80,18 @@ async def chat(
     except Exception:
         pass
 
-    context_message = build_context_message(req.message, user_name, profile_data)
-
-    full_reply = ""
-    final_intent = "chat"
-
-    async def event_stream():
-        nonlocal full_reply, final_intent
-        try:
-            async for event in chat_stream(user_id, context_message):
-                event_type = event.get("type")
-
-                if event_type == "text":
-                    full_reply += event.get("content", "")
-                    # 实时转发给前端（真正的流式）
-                    yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
-
-                elif event_type == "done":
-                    final_intent = event.get("intent", "chat")
-                    if event.get("full_content") and not full_reply:
-                        full_reply = event["full_content"]
-                    # 在 done 事件中注入 conversation_id，方便前端捕获
-                    event["conversation_id"] = conv_id
-                    yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
-
-                elif event_type == "error":
-                    yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
-
-            # 流结束后保存助手回复到本地数据库
-            if full_reply.strip():
-                assistant_msg = ChatMessage(
-                    user_id=user_id,
-                    conversation_id=conv_id,
-                    role="assistant",
-                    content=full_reply.strip(),
-                    intent=final_intent,
-                )
-                db.add(assistant_msg)
-                await db.flush()
-                await db.commit()
-
-        except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
+    # ── 双通道分流：AGENT_BACKEND=coze 走旧扣子路径，其余走 langgraph 本地智能体 ──
+    backend = get_settings().AGENT_BACKEND
+    if backend == "coze":
+        context_message = build_context_message(req.message, user_name, profile_data)
+        generator = _coze_event_stream(db, user_id, conv_id, context_message)
+    else:
+        generator = _langgraph_event_stream(
+            db, user_id, conv_id, req.message, user_name, profile_data, user_msg.id,
+        )
 
     return StreamingResponse(
-        event_stream(),
+        generator,
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -126,6 +99,185 @@ async def chat(
             "X-Accel-Buffering": "no",
         },
     )
+
+
+# ── 旧通道：Coze 扣子智能体（回退路径，逻辑与改造前完全一致） ──────
+
+async def _coze_event_stream(
+    db: AsyncSession,
+    user_id: int,
+    conv_id: str,
+    context_message: str,
+):
+    """Coze 通道事件流（原 event_stream 主体，原样保留）"""
+    full_reply = ""
+    final_intent = "chat"
+
+    try:
+        async for event in chat_stream(user_id, context_message):
+            event_type = event.get("type")
+
+            if event_type == "text":
+                full_reply += event.get("content", "")
+                # 实时转发给前端（真正的流式）
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+            elif event_type == "done":
+                final_intent = event.get("intent", "chat")
+                if event.get("full_content") and not full_reply:
+                    full_reply = event["full_content"]
+                # 在 done 事件中注入 conversation_id，方便前端捕获
+                event["conversation_id"] = conv_id
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+            elif event_type == "error":
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+        # 流结束后保存助手回复到本地数据库
+        if full_reply.strip():
+            assistant_msg = ChatMessage(
+                user_id=user_id,
+                conversation_id=conv_id,
+                role="assistant",
+                content=full_reply.strip(),
+                intent=final_intent,
+            )
+            db.add(assistant_msg)
+            await db.flush()
+            await db.commit()
+
+    except Exception as e:
+        yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
+
+
+# ── 新通道：LangGraph 本地智能体 ─────────────────────────────────
+
+async def _load_history(db: AsyncSession, user_id: int, conv_id: str, before_msg_id: int) -> list[dict]:
+    """加载该会话最近 10 轮对话历史（排除本轮刚存的用户消息）"""
+    result = await db.execute(
+        select(ChatMessage)
+        .where(
+            ChatMessage.user_id == user_id,
+            ChatMessage.conversation_id == conv_id,
+            ChatMessage.id < before_msg_id,   # 排除本轮刚插入的用户消息
+        )
+        .order_by(ChatMessage.id.desc())
+        .limit(20)                            # 最近 20 条 ≈ 10 轮
+    )
+    messages = result.scalars().all()
+    # 倒序查出，反转为时间正序
+    return [
+        {"role": m.role, "content": m.content}
+        for m in reversed(messages)
+    ]
+
+
+async def _langgraph_event_stream(
+    db: AsyncSession,
+    user_id: int,
+    conv_id: str,
+    message: str,
+    user_name: str | None,
+    profile_data: dict | None,
+    user_msg_id: int,
+):
+    """
+    LangGraph 通道事件流 —— SSE 三事件格式与 Coze 通道逐字节对齐：
+      {"type":"text","content":"..."} / {"type":"done",...} / {"type":"error",...}
+    """
+    full_reply = ""
+    final_intent = "chat"
+
+    try:
+        # 意图识别（关键词通道，复用现有 INTENT_KEYWORDS）→ 技能路由
+        intent = identify_intent(message)
+        skill_engine = get_skill_engine()
+        skill = skill_engine.route(intent)
+
+        # 画像上下文（渲染 system prompt 用，变量缺失由模板默认值兜底）
+        profile_ctx: dict = dict(profile_data or {})
+        if user_name:
+            profile_ctx["user_name"] = user_name
+
+        # 加载最近 10 轮历史（过滤 [待确认] 前缀消息在图工厂内完成）
+        history = await _load_history(db, user_id, conv_id, user_msg_id)
+
+        # 组装 Agent 图：请求级依赖经 ToolContext 闭包注入，图内只读不 commit
+        ctx = ToolContext(db=db, user_id=user_id)
+        tools = skill_engine.get_tools(skill, ctx)
+        graph, graph_input = build_agent_graph(
+            ctx,
+            skill,
+            tools,
+            history,
+            message,
+            conversation_id=conv_id,
+            profile_context=profile_ctx,
+        )
+
+        # astream_events(version="v2")：流式冒泡 on_chat_model_stream 增量
+        async for event in graph.astream_events(graph_input, version="v2"):
+            ev_type = event.get("event")
+
+            if ev_type == "on_chat_model_stream":
+                chunk = event.get("data", {}).get("chunk")
+                content = getattr(chunk, "content", "") if chunk is not None else ""
+                if isinstance(content, str) and content:
+                    # 输出护栏：尽力剥离推理 <think> 标签（流式分片场景）
+                    cleaned = strip_think_tags(content)
+                    if cleaned:
+                        full_reply += cleaned
+                        text_event = {"type": "text", "content": cleaned}
+                        yield f"data: {json.dumps(text_event, ensure_ascii=False)}\n\n"
+
+            elif ev_type == "on_chain_end":
+                # 捕获 respond 节点输出（intent 推导结果 + final_content 兜底）
+                # 注意：astream_events(v2) 的事件负载嵌套在 event["data"] 下，
+                # 顶层无 output 键，必须取 event["data"]["output"]，否则恒为 None（P2）
+                output = event.get("data", {}).get("output")
+                if isinstance(output, dict) and "final_content" in output:
+                    final_intent = output.get("intent", "chat")
+                    # full_content 语义与 Coze 版对齐（全部增量之和）；
+                    # respond 的 final_content 仅在流增量丢失时兜底
+                    if output.get("final_content") and not full_reply:
+                        full_reply = output["final_content"]
+
+        # done 事件：intent + full_content + conversation_id（字段与 Coze 版对齐）
+        if full_reply.strip():
+            done_event = {
+                "type": "done",
+                "intent": final_intent,
+                "full_content": full_reply,
+                "conversation_id": conv_id,
+            }
+            yield f"data: {json.dumps(done_event, ensure_ascii=False)}\n\n"
+
+            # 流结束后保存助手回复到本地数据库（落库只在 API 层，图内不 commit）
+            assistant_msg = ChatMessage(
+                user_id=user_id,
+                conversation_id=conv_id,
+                role="assistant",
+                content=full_reply.strip(),
+                intent=final_intent,
+            )
+            db.add(assistant_msg)
+            await db.flush()
+            await db.commit()
+        else:
+            # 异常兜底：图跑完但无任何内容
+            error_event = {"type": "error", "message": "智能体未返回有效内容，请重试"}
+            yield f"data: {json.dumps(error_event, ensure_ascii=False)}\n\n"
+
+    except RuntimeError as e:
+        # 典型场景：DEEPSEEK_API_KEY 未配置（llm_provider 抛出）
+        print(f"[zhitu][chat] LangGraph 通道错误: {e}")
+        error_event = {"type": "error", "message": str(e)}
+        yield f"data: {json.dumps(error_event, ensure_ascii=False)}\n\n"
+    except Exception as e:
+        # 统一异常兜底：返回 error 事件，绝不 500
+        print(f"[zhitu][chat] LangGraph 通道异常: {type(e).__name__}: {e}")
+        error_event = {"type": "error", "message": f"智能体调用异常: {str(e)[:200]}"}
+        yield f"data: {json.dumps(error_event, ensure_ascii=False)}\n\n"
 
 
 # ── 自动保存规划 ──────────────────────────────────────────────────

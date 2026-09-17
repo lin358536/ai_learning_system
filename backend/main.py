@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="智途校园 API",
-    description="大学生 AI 成长服务平台 | 扣子Coze智能体驱动",
+    description="大学生 AI 成长服务平台 | 本地 LangChain / LangGraph 智能体驱动（DeepSeek）",
     version="2.0.0",
     lifespan=lifespan,
 )

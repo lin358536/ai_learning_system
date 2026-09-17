@@ -13,3 +13,20 @@ python-dotenv==1.0.1
 python-multipart==0.0.9
 email-validator==2.3.0
 cozepy
+
+# ── LangChain Agent 重构（本地智能体，替代 Coze 远程智能体） ──
+# 注1：锁定 0.3.x 版本线 —— langchain 1.x 要求 pydantic>=2.11，与本项目 pydantic==2.9.0 冲突
+# 注2：langsmith 锁定 0.3.45 —— 0.12.x 硬依赖 websockets>=15，与 cozepy 的 <15 冲突
+# 注3：mcp 锁定 1.9.4 —— mcp 2.x 会连锁升级 pydantic/starlette/uvicorn 破坏现有版本
+# 注4：websockets 锁定 14.x —— cozepy 要求 >=14.1,<15；langsmith 0.3.45 无 websockets 依赖，可共存
+langchain>=0.3.14,<0.4          # 实际安装 0.3.30
+langchain-core>=0.3.29,<0.4     # 实际安装 0.3.86
+langchain-openai>=0.3.0,<0.4    # 实际安装 0.3.35
+langgraph>=0.2.60,<0.3          # 实际安装 0.2.76
+langchain-mcp-adapters>=0.1.0,<0.2  # 实际安装 0.1.14（MCP 桥接，本期仅骨架）
+langsmith>=0.3.45,<0.4          # 实际安装 0.3.45（langchain-core 传递依赖，显式锁定防漂移）
+mcp>=1.9.4,<2.0                 # 实际安装 1.9.4（langchain-mcp-adapters 传递依赖，显式锁定防漂移）
+websockets>=14.1,<15            # 实际安装 14.2（cozepy 约束，显式锁定防漂移）
+pydantic-settings>=2.5.2,<2.6   # 实际安装 2.5.2（mcp 要求 >=2.5.2）
+pyyaml>=6.0.2                # prompt YAML 模板
+jinja2>=3.1.4                # 模板渲染（langchain 已依赖，显式声明）
